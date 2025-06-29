@@ -1,0 +1,300 @@
+<div class="product-detail-container">
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-spinner">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle me-2"></i>
+    {{ successMessage }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+
+  <!-- Product Details -->
+  <div *ngIf="!loading && product" class="row">
+    <!-- Product Images -->
+    <div class="col-lg-6 mb-4">
+      <div class="product-images">
+        <!-- Main Image -->
+        <div class="main-image-container mb-3">
+          <img 
+            [src]="getSelectedImage()" 
+            class="img-fluid rounded" 
+            [alt]="product.title">
+        </div>
+        
+        <!-- Thumbnail Images -->
+        <div *ngIf="product.images.length > 1" class="thumbnail-images">
+          <div class="row">
+            <div *ngFor="let image of product.images; let i = index" 
+                 class="col-2 mb-2">
+              <img 
+                [src]="image" 
+                class="img-thumbnail cursor-pointer" 
+                [class.selected]="i === selectedImageIndex"
+                [alt]="product.title + ' - Image ' + (i + 1)"
+                (click)="selectImage(i)">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Information -->
+    <div class="col-lg-6">
+      <div class="product-info">
+        <!-- Admin Edit Button -->
+        <div *ngIf="isAdmin" class="mb-3">
+          <button 
+            *ngIf="!isEditing" 
+            class="btn btn-warning" 
+            (click)="toggleEdit()">
+            <i class="bi bi-pencil me-2"></i>Edit Product
+          </button>
+          <div *ngIf="isEditing" class="d-flex gap-2">
+            <button 
+              class="btn btn-success" 
+              (click)="updateProduct()"
+              [disabled]="updateLoading || adminForm.invalid">
+              <span *ngIf="updateLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              {{ updateLoading ? 'Updating...' : 'Save Changes' }}
+            </button>
+            <button 
+              class="btn btn-secondary" 
+              (click)="cancelEdit()">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <!-- Product Display Mode -->
+        <div *ngIf="!isEditing">
+          <h1 class="mb-3">{{ product.title }}</h1>
+          
+          <div class="mb-3">
+            <span class="category-badge me-2">{{ product.category.name }}</span>
+            <span class="price fs-3">${{ product.price }}</span>
+          </div>
+          
+          <p class="text-muted mb-4">{{ product.description }}</p>
+
+          <!-- Product Form -->
+          <form [formGroup]="productForm" (ngSubmit)="addToCart()">
+            <!-- Variants -->
+            <div formArrayName="variants" class="mb-3">
+              <div *ngFor="let variant of variantsArray.controls; let i = index" 
+                   [formGroupName]="i" 
+                   class="variant-group">
+                
+                <!-- Size Selection -->
+                <div *ngIf="variant.get('size')" class="mb-3">
+                  <label class="form-label">Size</label>
+                  <select formControlName="size" class="form-select">
+                    <option value="">Select Size</option>
+                    <option value="XS">XS</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                  </select>
+                  <div *ngIf="variant.get('size')?.invalid && variant.get('size')?.touched" 
+                       class="text-danger small">
+                    Size is required
+                  </div>
+                </div>
+
+                <!-- Color Selection -->
+                <div *ngIf="variant.get('color')" class="mb-3">
+                  <label class="form-label">Color</label>
+                  <select formControlName="color" class="form-select">
+                    <option value="">Select Color</option>
+                    <option value="Red">Red</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Green">Green</option>
+                    <option value="Black">Black</option>
+                    <option value="White">White</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quantity -->
+            <div class="mb-3">
+              <label class="form-label">Quantity</label>
+              <div class="input-group">
+                <button 
+                  type="button" 
+                  class="btn btn-outline-secondary" 
+                  (click)="decreaseQuantity()">
+                  <i class="bi bi-dash"></i>
+                </button>
+                <input 
+                  type="number" 
+                  class="form-control text-center" 
+                  formControlName="quantity"
+                  min="1">
+                <button 
+                  type="button" 
+                  class="btn btn-outline-secondary" 
+                  (click)="increaseQuantity()">
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
+              <div *ngIf="productForm.get('quantity')?.invalid && productForm.get('quantity')?.touched" 
+                   class="text-danger small">
+                Quantity must be at least 1
+              </div>
+            </div>
+
+            <!-- Add to Cart Button -->
+            <div class="d-grid gap-2">
+              <button 
+                type="submit" 
+                class="btn btn-primary btn-lg"
+                [disabled]="productForm.invalid">
+                <i class="bi bi-cart-plus me-2"></i>
+                Add to Cart
+              </button>
+            </div>
+          </form>
+
+          <!-- Product Meta -->
+          <div class="mt-4 pt-4 border-top">
+            <div class="row">
+              <div class="col-6">
+                <small class="text-muted">Product ID:</small>
+                <br>
+                <strong>{{ product.id }}</strong>
+              </div>
+              <div class="col-6">
+                <small class="text-muted">Category:</small>
+                <br>
+                <strong>{{ product.category.name }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Edit Mode -->
+        <div *ngIf="isEditing">
+          <form [formGroup]="adminForm" (ngSubmit)="updateProduct()">
+            <h3 class="mb-3">Edit Product</h3>
+            
+            <!-- Title -->
+            <div class="mb-3">
+              <label for="title" class="form-label">Product Title</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="title"
+                formControlName="title"
+                [class.is-invalid]="adminForm.get('title')?.invalid && adminForm.get('title')?.touched">
+              <div *ngIf="adminForm.get('title')?.invalid && adminForm.get('title')?.touched" 
+                   class="invalid-feedback">
+                Title is required
+              </div>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-3">
+              <label for="price" class="form-label">Price</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  id="price"
+                  formControlName="price"
+                  [class.is-invalid]="adminForm.get('price')?.invalid && adminForm.get('price')?.touched"
+                  min="0"
+                  step="0.01">
+              </div>
+              <div *ngIf="adminForm.get('price')?.invalid && adminForm.get('price')?.touched" 
+                   class="invalid-feedback">
+                Valid price is required
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea 
+                class="form-control" 
+                id="description"
+                formControlName="description"
+                [class.is-invalid]="adminForm.get('description')?.invalid && adminForm.get('description')?.touched"
+                rows="4"></textarea>
+              <div *ngIf="adminForm.get('description')?.invalid && adminForm.get('description')?.touched" 
+                   class="invalid-feedback">
+                Description is required
+              </div>
+            </div>
+
+            <!-- Images -->
+            <div class="mb-3">
+              <label class="form-label">Product Images</label>
+              <div formArrayName="images">
+                <div *ngFor="let imageControl of imagesArray.controls; let i = index" 
+                     class="input-group mb-2">
+                  <input 
+                    type="url" 
+                    class="form-control" 
+                    [formControlName]="i"
+                    placeholder="Image URL"
+                    (input)="onImageUrlChange(i, $event)">
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-danger" 
+                    (click)="removeImage(i)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                class="btn btn-outline-primary btn-sm" 
+                (click)="addImageUrl()">
+                <i class="bi bi-plus me-1"></i>Add Image URL
+              </button>
+            </div>
+
+            <!-- Update Buttons -->
+            <div class="d-grid gap-2">
+              <button 
+                type="submit" 
+                class="btn btn-success"
+                [disabled]="updateLoading || adminForm.invalid">
+                <span *ngIf="updateLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                {{ updateLoading ? 'Updating...' : 'Update Product' }}
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-secondary" 
+                (click)="cancelEdit()">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Not Found -->
+  <div *ngIf="!loading && !product" class="text-center py-5">
+    <h3>Product not found</h3>
+    <p class="text-muted">The product you're looking for doesn't exist.</p>
+    <a routerLink="/products" class="btn btn-primary">Back to Products</a>
+  </div>
+</div>

@@ -1,0 +1,135 @@
+<div class="cart-container">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="mb-4">Shopping Cart</h1>
+    </div>
+  </div>
+
+  <!-- Empty Cart -->
+  <div *ngIf="isCartEmpty()" class="text-center py-5">
+    <i class="bi bi-cart3 fs-1 text-muted mb-3"></i>
+    <h3>Your cart is empty</h3>
+    <p class="text-muted">Add some products to your cart to get started.</p>
+    <a routerLink="/products" class="btn btn-primary">Continue Shopping</a>
+  </div>
+
+  <!-- Cart Items -->
+  <div *ngIf="!isCartEmpty()" class="row">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Cart Items ({{ cartItemCount }})</h5>
+          <button 
+            class="btn btn-outline-danger btn-sm" 
+            (click)="clearCart()">
+            Clear Cart
+          </button>
+        </div>
+        <div class="card-body">
+          <div *ngFor="let item of cartItems; let i = index" class="cart-item mb-3 pb-3 border-bottom">
+            <div class="row align-items-center">
+              <!-- Product Image -->
+              <div class="col-md-2">
+                <img 
+                  [src]="item.product.images[0] || 'https://via.placeholder.com/100x100'" 
+                  class="img-fluid rounded" 
+                  [alt]="item.product.title">
+              </div>
+              
+              <!-- Product Details -->
+              <div class="col-md-4">
+                <h6 class="mb-1">{{ item.product.title }}</h6>
+                <p class="text-muted small mb-1">{{ item.product.category.name }}</p>
+                <span class="price">${{ item.product.price }}</span>
+                
+                <!-- Variants -->
+                <div *ngIf="item.variants" class="mt-2">
+                  <small class="text-muted">
+                    <span *ngIf="item.variants.size">Size: {{ item.variants.size }}</span>
+                    <span *ngIf="item.variants.color"> | Color: {{ item.variants.color }}</span>
+                  </small>
+                </div>
+              </div>
+              
+              <!-- Quantity Controls -->
+              <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                  <button 
+                    class="btn btn-outline-secondary" 
+                    type="button"
+                    (click)="updateQuantity(i, item.quantity - 1)">
+                    <i class="bi bi-dash"></i>
+                  </button>
+                  <input 
+                    type="number" 
+                    class="form-control text-center" 
+                    [value]="item.quantity"
+                    min="1"
+                    (change)="onQuantityChange(i, $event)">
+                  <button 
+                    class="btn btn-outline-secondary" 
+                    type="button"
+                    (click)="updateQuantity(i, item.quantity + 1)">
+                    <i class="bi bi-plus"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Item Total -->
+              <div class="col-md-2 text-end">
+                <span class="price">${{ item.product.price * item.quantity }}</span>
+              </div>
+              
+              <!-- Remove Button -->
+              <div class="col-md-1 text-end">
+                <button 
+                  class="btn btn-outline-danger btn-sm" 
+                  (click)="removeItem(i)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Summary -->
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Order Summary</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal:</span>
+            <span>${{ cartTotal }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Tax (10%):</span>
+            <span>${{ getTaxAmount() }}</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between mb-3">
+            <strong>Total:</strong>
+            <strong class="price">${{ getCartTotalWithTax() }}</strong>
+          </div>
+          
+          <div class="d-grid gap-2">
+            <a 
+              routerLink="/checkout" 
+              class="btn btn-primary"
+              [class.disabled]="isCartEmpty()">
+              Proceed to Checkout
+            </a>
+            <a 
+              routerLink="/products" 
+              class="btn btn-outline-secondary">
+              Continue Shopping
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

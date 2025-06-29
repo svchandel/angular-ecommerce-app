@@ -1,0 +1,112 @@
+<div class="register-container p-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow">
+        <div class="card-header text-center">
+          <h3 class="mb-0">Create Account</h3>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <!-- Name Field -->
+            <div class="mb-3">
+              <label for="name" class="form-label">Full Name</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="name"
+                formControlName="name"
+                [class.is-invalid]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
+                placeholder="Enter your full name">
+              <div *ngIf="getErrorMessage('name')" class="invalid-feedback">
+                {{ getErrorMessage('name') }}
+              </div>
+            </div>
+
+            <!-- Email Field -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <div class="input-group">
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  id="email"
+                  formControlName="email"
+                  [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+                  (blur)="onEmailBlur()"
+                  placeholder="Enter your email">
+                <span *ngIf="checkingEmail" class="input-group-text">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                </span>
+              </div>
+              <div *ngIf="getErrorMessage('email')" class="invalid-feedback d-block">
+                {{ getErrorMessage('email') }}
+              </div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input 
+                type="password" 
+                class="form-control" 
+                id="password"
+                formControlName="password"
+                [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+                placeholder="Enter your password">
+              <div *ngIf="getErrorMessage('password')" class="invalid-feedback">
+                {{ getErrorMessage('password') }}
+              </div>
+            </div>
+
+            <!-- Confirm Password Field -->
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <input 
+                type="password" 
+                class="form-control" 
+                id="confirmPassword"
+                formControlName="confirmPassword"
+                [class.is-invalid]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched"
+                placeholder="Confirm your password">
+              <div *ngIf="getErrorMessage('confirmPassword')" class="invalid-feedback">
+                {{ getErrorMessage('confirmPassword') }}
+              </div>
+              <div *ngIf="getPasswordMatchError()" class="invalid-feedback d-block">
+                {{ getPasswordMatchError() }}
+              </div>
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+              {{ errorMessage }}
+            </div>
+
+            <!-- Success Message -->
+            <div *ngIf="successMessage" class="alert alert-success" role="alert">
+              {{ successMessage }}
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid">
+              <button 
+                type="submit" 
+                class="btn btn-primary"
+                [disabled]="loading || registerForm.invalid">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                {{ loading ? 'Creating Account...' : 'Create Account' }}
+              </button>
+            </div>
+          </form>
+
+          <!-- Login Link -->
+          <div class="text-center mt-3">
+            <p class="mb-0">
+              Already have an account? 
+              <a routerLink="/login" class="text-decoration-none">Login here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

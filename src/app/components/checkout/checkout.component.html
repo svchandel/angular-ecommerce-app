@@ -1,0 +1,234 @@
+<div class="checkout-container">
+  <!-- Order Success -->
+  <div *ngIf="orderPlaced" class="text-center py-5">
+    <div class="card">
+      <div class="card-body">
+        <i class="bi bi-check-circle text-success fs-1 mb-3"></i>
+        <h2 class="text-success">Order Placed Successfully!</h2>
+        <p class="text-muted">Thank you for your purchase. You will receive a confirmation email shortly.</p>
+        <a routerLink="/products" class="btn btn-primary">Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Form -->
+  <div *ngIf="!orderPlaced" class="row">
+    <div class="col-12">
+      <h1 class="mb-4">Checkout</h1>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Shipping Information</h5>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="firstName"
+                  formControlName="firstName"
+                  [class.is-invalid]="checkoutForm.get('firstName')?.invalid && checkoutForm.get('firstName')?.touched">
+                <div *ngIf="getErrorMessage('firstName')" class="invalid-feedback">
+                  {{ getErrorMessage('firstName') }}
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="lastName"
+                  formControlName="lastName"
+                  [class.is-invalid]="checkoutForm.get('lastName')?.invalid && checkoutForm.get('lastName')?.touched">
+                <div *ngIf="getErrorMessage('lastName')" class="invalid-feedback">
+                  {{ getErrorMessage('lastName') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  id="email"
+                  formControlName="email"
+                  [class.is-invalid]="checkoutForm.get('email')?.invalid && checkoutForm.get('email')?.touched">
+                <div *ngIf="getErrorMessage('email')" class="invalid-feedback">
+                  {{ getErrorMessage('email') }}
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input 
+                  type="tel" 
+                  class="form-control" 
+                  id="phone"
+                  formControlName="phone"
+                  [class.is-invalid]="checkoutForm.get('phone')?.invalid && checkoutForm.get('phone')?.touched">
+                <div *ngIf="getErrorMessage('phone')" class="invalid-feedback">
+                  {{ getErrorMessage('phone') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="address" class="form-label">Address</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="address"
+                formControlName="address"
+                [class.is-invalid]="checkoutForm.get('address')?.invalid && checkoutForm.get('address')?.touched">
+              <div *ngIf="getErrorMessage('address')" class="invalid-feedback">
+                {{ getErrorMessage('address') }}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="city" class="form-label">City</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="city"
+                  formControlName="city"
+                  [class.is-invalid]="checkoutForm.get('city')?.invalid && checkoutForm.get('city')?.touched">
+                <div *ngIf="getErrorMessage('city')" class="invalid-feedback">
+                  {{ getErrorMessage('city') }}
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="state" class="form-label">State</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="state"
+                  formControlName="state"
+                  [class.is-invalid]="checkoutForm.get('state')?.invalid && checkoutForm.get('state')?.touched">
+                <div *ngIf="getErrorMessage('state')" class="invalid-feedback">
+                  {{ getErrorMessage('state') }}
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="zipCode" class="form-label">ZIP Code</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="zipCode"
+                  formControlName="zipCode"
+                  [class.is-invalid]="checkoutForm.get('zipCode')?.invalid && checkoutForm.get('zipCode')?.touched">
+                <div *ngIf="getErrorMessage('zipCode')" class="invalid-feedback">
+                  {{ getErrorMessage('zipCode') }}
+                </div>
+              </div>
+            </div>
+
+            <hr>
+
+            <h5 class="mb-3">Payment Information</h5>
+            <div class="mb-3">
+              <label for="cardNumber" class="form-label">Card Number</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="cardNumber"
+                formControlName="cardNumber"
+                [class.is-invalid]="checkoutForm.get('cardNumber')?.invalid && checkoutForm.get('cardNumber')?.touched"
+                placeholder="1234567890123456">
+              <div *ngIf="getErrorMessage('cardNumber')" class="invalid-feedback">
+                {{ getErrorMessage('cardNumber') }}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="expiryDate" class="form-label">Expiry Date</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="expiryDate"
+                  formControlName="expiryDate"
+                  [class.is-invalid]="checkoutForm.get('expiryDate')?.invalid && checkoutForm.get('expiryDate')?.touched"
+                  placeholder="MM/YY">
+                <div *ngIf="getErrorMessage('expiryDate')" class="invalid-feedback">
+                  {{ getErrorMessage('expiryDate') }}
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="cvv" class="form-label">CVV</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="cvv"
+                  formControlName="cvv"
+                  [class.is-invalid]="checkoutForm.get('cvv')?.invalid && checkoutForm.get('cvv')?.touched"
+                  placeholder="123">
+                <div *ngIf="getErrorMessage('cvv')" class="invalid-feedback">
+                  {{ getErrorMessage('cvv') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="d-grid">
+              <button 
+                type="submit" 
+                class="btn btn-primary btn-lg"
+                [disabled]="loading || checkoutForm.invalid">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                {{ loading ? 'Processing Order...' : 'Place Order' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Order Summary</h5>
+        </div>
+        <div class="card-body">
+          <!-- Cart Items -->
+          <div *ngFor="let item of cartItems" class="d-flex justify-content-between mb-2">
+            <div>
+              <strong>{{ item.product.title }}</strong>
+              <br>
+              <small class="text-muted">Qty: {{ item.quantity }}</small>
+            </div>
+            <span>${{ item.product.price * item.quantity }}</span>
+          </div>
+
+          <hr>
+
+          <!-- Totals -->
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal:</span>
+            <span>${{ cartTotal }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Tax (10%):</span>
+            <span>${{ getTaxAmount() }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Shipping:</span>
+            <span>{{ getShippingCost() === 0 ? 'Free' : '$' + getShippingCost() }}</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between mb-3">
+            <strong>Total:</strong>
+            <strong class="price">${{ getFinalTotal() }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
