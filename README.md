@@ -6,7 +6,7 @@
 1. Clone the Repository
 ```bash
 git clone <repository-url>
-cd ecommerce-app
+cd angular-ecommerce-app
 ```
 
 2. Install Dependencies
